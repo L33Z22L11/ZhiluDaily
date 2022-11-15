@@ -1,7 +1,6 @@
 # 西邮Linux兴趣小组2020纳新试题题解
 
-> Zhilu
-
+> 感谢 [Zhilu](https://github.com/L33Z22L11) 重新录入题目原件。好人一生平安。
 
 >注：
 > 1. 本题仅作为面试有限参考
@@ -13,11 +12,11 @@
 ## 1. 请试着解释其输出。
 
 ```c
-int main(int argc , char *argv[]) {
-  unsigned char a = 255;
-  char ch = 128;
-  a -= ch;
-  printf("a = %d ch = %d\n", a, ch);
+int main(int argc, char *argv[]) {
+    unsigned char a = 255;
+    char ch = 128;
+    a -= ch;
+    printf("a = %d ch = %d\n", a, ch);
 }
 ```
 
@@ -25,9 +24,9 @@ int main(int argc , char *argv[]) {
 
 ```c
 int main(int argc, char *argv[]) {
-  char *str = "Xi You Linux Group 20";
-  printf("%d\n", printf(str));
-  return 0;
+    char *str = "Xi You Linux Group 20";
+    printf("%d\n", printf(str));
+    return 0;
 }
 ```
 
@@ -36,21 +35,21 @@ int main(int argc, char *argv[]) {
 ```c
 int i = 2;
 void func() {
-  if(i != 0) {
-  static int m = 0;
-  int n = 0;
-  n++;
-  m++;
-  printf("m = %d, n = %d\n", m, n);
-  i--;
-  func();
-  } else {
-  return;
-  }
+    if(i != 0) {
+    static int m = 0;
+    int n = 0;
+    n++;
+    m++;
+    printf("m = %d, n = %d\n", m, n);
+    i--;
+    func();
+    } else {
+    return;
+    }
 }
 int main(int argc, char *argv[]) {
-  func();
-  return 0;
+    func();
+    return 0;
 }
 ```
 
@@ -58,13 +57,13 @@ int main(int argc, char *argv[]) {
 
 ```c
 int main(int argc, char * argv[]) {
-  char ch = 'A';
-  int i = 65;
-  unsigned int f = 33554433;
-  *(int *)&f >>= 24;
-  *(int *)&f = *(int *)&f + '?';
-  printf("ch = %c i = %c f = %c\n", ch, i, *(int *)&f);
-  return 0;
+    char ch = 'A';
+    int i = 65;
+    unsigned int f = 33554433;
+    *(int *)&f >>= 24;
+    *(int *)&f = *(int *)&f + '?';
+    printf("ch = %c i = %c f = %c\n", ch, i, *(int *)&f);
+    return 0;
 }
 ```
 
@@ -72,10 +71,10 @@ int main(int argc, char * argv[]) {
 
 ```c
 int main(int argc, char *argv[]) {
-  int a[2][2];
-  printf("&a = %p\t&a[0] = %p\t&a[0][0] = %p\n", &a, &a[0], &a[0][0]);
-  printf("&a+1 = %p\t&a[0]+1 = %p\t&a[0][0]+1= %p\n", &a+1, &a[0]+1, &a[0][0]+1);
-  return 0;
+    int a[2][2];
+    printf("&a = %p\t&a[0] = %p\t&a[0][0] = %p\n", &a, &a[0], &a[0][0]);
+    printf("&a+1 = %p\t&a[0]+1 = %p\t&a[0][0]+1= %p\n", &a+1, &a[0]+1, &a[0][0]+1);
+    return 0;
 }
 ```
 
@@ -83,14 +82,14 @@ int main(int argc, char *argv[]) {
 
 ```c
 int* get_array() {
-  int array[1121]; 
-  for (int i = 0; i < sizeof(array) / sizeof(int); i++) {
-    array[i] = i;
-  }
-  return array;
+    int array[1121]; 
+    for (int i = 0; i < sizeof(array) / sizeof(int); i++) {
+        array[i] = i;
+    }
+    return array;
 }
 int main(int argc, char *argv[]) { 
-  int *p = get_array();
+    int *p = get_array();
 }
 ```
 
@@ -98,11 +97,11 @@ int main(int argc, char *argv[]) {
 
 ```c
 int main(int argc, char *argv[]) {
-  char str[] = "XiyouLinuxGroup"; 
-  char *p = str; 
-  char x[] = "XiyouLinuxGroup\t\106F\bamily";
-  printf("%zu %zu %zu %zu\n", sizeof(str), sizeof(p), sizeof(x), strlen(x));
-  return 0;
+    char str[] = "XiyouLinuxGroup"; 
+    char *p = str; 
+    char x[] = "XiyouLinuxGroup\t\106F\bamily";
+    printf("%zu %zu %zu %zu\n", sizeof(str), sizeof(p), sizeof(x), strlen(x));
+    return 0;
 }
 ```
 
@@ -110,18 +109,18 @@ int main(int argc, char *argv[]) {
 
 ```c
 int add(int *x, int y) {
-  return *x = (*x^y) + ((*x&y)<<1);
+    return *x = (*x^y) + ((*x&y)<<1);
 }
 int a;
 int main(int argc, char *argv[]) {
-  int b = 2020;
-  if(add(&b, 1) || add(&a, 1)) {
-  printf("XiyouLinuxGroup%d\n", b);
-  printf("Waiting for y%du!\n", a);
-  }
-  if(add(&b, 1) && a++) {
-  printf("XiyouLinuxGroup%d\n", b);
-  printf("Waiting for y%du!\n", a);
+    int b = 2020;
+    if(add(&b, 1) || add(&a, 1)) {
+        printf("XiyouLinuxGroup%d\n", b);
+        printf("Waiting for y%du!\n", a);
+    }
+    if(add(&b, 1) && a++) {
+    printf("XiyouLinuxGroup%d\n", b);
+    printf("Waiting for y%du!\n", a);
 }
   return 0;
 } 
@@ -131,14 +130,14 @@ int main(int argc, char *argv[]) {
 
 ```c
 void func() { 
-  int a = 2020;
-  unsigned long c;
-  printf("%p\n", &a);
-  printf("我们想要修改的地址：");
-  scanf("%lx", &c);
-  printf("请随便输入一个数字：");
-  scanf("%d", (int *)c);
-  printf("a = %d\n", a);
+    int a = 2020;
+    unsigned long c;
+    printf("%p\n", &a);
+    printf("我们想要修改的地址：");
+    scanf("%lx", &c);
+    printf("请随便输入一个数字：");
+    scanf("%d", (int *)c);
+    printf("a = %d\n", a);
 }
 ```
 
@@ -149,8 +148,8 @@ void func() {
 
 ```c
 puts((char*)(int const[]){
-0X6F796958,0X6E694C75,0X72477875,
-0X3270756F,0X313230,0X00000A
+    0X6F796958,0X6E694C75,0X72477875,
+    0X3270756F,0X313230,0X00000A
 });
 ```
 
@@ -158,23 +157,23 @@ puts((char*)(int const[]){
 
 ```c
 int main(int argc, char *argv[]) {
-  char str[1121];
-  int key;
-  char t;
-  fgets(str, 1121, stdin);
-  for(int i = 0; i < strlen(str) - 1; i++) {
-    key = i;
-    for(int j = i + 1; j < strlen(str); j++) {
-      if(str[key] > str[j]) {
-        key = j;
-      }
+    char str[1121];
+    int key;
+    char t;
+    fgets(str, 1121, stdin);
+    for(int i = 0; i < strlen(str) - 1; i++) {
+        key = i;
+        for(int j = i + 1; j < strlen(str); j++) {
+            if(str[key] > str[j]) {
+                key = j;
+            }
+        } 
+        t = str[key];
+        str[key] = str[i];
+        str[i] = t;
     } 
-    t = str[key];
-    str[key] = str[i];
-    str[i] = t;
-  } 
-  puts(str);
-  return 0;
+    puts(str);
+    return 0;
 }
 ```
 

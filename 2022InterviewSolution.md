@@ -1,6 +1,6 @@
 # 西邮Linux兴趣小组2022纳新面试题题解
 
-> Zhilu
+> 感谢 [Zhilu](https://github.com/L33Z22L11) 重新录入题目原件。好人一生平安。
 
 > - 本题目只作为`Xiyou Linux兴趣小组`2022纳新面试的有限参考。
 > - 为节省版面，本试题的程序源码省去了`#include`指令。
@@ -12,7 +12,7 @@
 > 长期以来，西邮Linux兴趣小组的面试题以难度之高名扬西邮校内。我们作为出题人也清楚的知道这份试题略有难度。请别担心。**若有同学能完成一半的题目，就已经十分优秀。** 其次，相比于题目的答案，我们对你的思路和过程更感兴趣，或许你的答案略有瑕疵，但你正确的思路和对知识的理解足以为你赢得绝大多数的分数。最后，做题的过程也是学习和成长的过程，相信本试题对你更加熟悉的掌握C语言的一定有所帮助。祝你好运。我们FZ103见！
 > 
 > Copyright © 2022 西邮Linux兴趣小组, All Rights Reserved.  
-> 本试题使用采用 [知识共享署名-非商业性使用-相同方式共享4.0国际许可协议](http://creativecommons.org/licenses/by-nc-sa/4.0/) 进行许可。
+> 本试题使用采用 [知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-sa/4.0/) 进行许可。
 
 
 ## 0. 我的计算器坏了？！
@@ -25,10 +25,10 @@
 
 ```c
 int main(void) {
-  if ((3 + 2 < 2) > (3 + 2 > 2))
-    printf("Welcome to Xiyou Linux Group\n");
-  else
-    printf("%d\n", printf("Xiyou Linux Group - 2%d", printf("")));
+    if ((3 + 2 < 2) > (3 + 2 > 2))
+        printf("Welcome to Xiyou Linux Group\n");
+    else
+        printf("%d\n", printf("Xiyou Linux Group - 2%d", printf("")));
 }
 ```
 
@@ -38,8 +38,7 @@ int main(void) {
 > - 请谈谈对`sizeof()`及`strlen()`的理解吧。
 
 ```c
-int main(void)
-{
+int main(void) {
     char p0[] = "Hello,Linux";
     char *p1 = "Hello,Linux";
     char p2[11] = "Hello,Linux";
@@ -62,8 +61,7 @@ int main(void)
 
 ```c
 int a = 3;
-void test()
-{
+void test() {
     int a = 1;
     a += 1;
     {
@@ -72,8 +70,7 @@ void test()
     }
     printf("a = %d\n", a);
 }
-int main(void)
-{
+int main(void) {
     test();
     printf("a= %d\n", a);
 }
@@ -85,22 +82,19 @@ int main(void)
 > `union`与`struct`各有什么特点呢，你了解他们的内存分配模式吗。
 
 ```c
-typedef union
-{
+typedef union {
     long l;
     int i[5];
     char c;
 } UNION;
-typedef struct
-{
+typedef struct {
     int like;
     UNION coin;
     double collect;
 } STRUCT;
-int main(void)
-{
-    printf("sizeof (UNION) = %zu \n", sizeof(UNION)); 
-    printf("sizeof (STRUCT) = %zu \n", sizeof(STRUCT));
+int main(void) {
+    printf("sizeof (UNION) = %zu\n", sizeof(UNION)); 
+    printf("sizeof (STRUCT) = %zu\n", sizeof(STRUCT));
 }
 ```
 ```
@@ -125,8 +119,7 @@ struct:
 > - 请谈谈你对位运算的理解。
 
 ```c
-int main(void)
-{
+int main(void) {
     unsigned char a = 4 | 7;
     a <<= 3;
     unsigned char b = 5 & 7;
@@ -136,8 +129,8 @@ int main(void)
     unsigned short d = (a ^ c) << 3;
     signed char e = -63;
     e <<= 2;
-    printf("a: %d, b: %d, c: %d, d: %d \n", a, b, c, (char)d);
-    printf("e: %#x \n", e);
+    printf("a: %d, b: %d, c: %d, d: %d\n", a, b, c, (char)d);
+    printf("e: %#x\n", e);
 }
 ```
 ```
@@ -187,12 +180,12 @@ e = 0000 0100
 ```c
 char* convertAndMerge(/*补全签名*/);
 int main(void) {
-  char words[2][20] = {"Welcome to Xiyou ", "Linux Group 2022"};
-  printf("%s\n", words[0]);
-  printf("%s\n", words[1]);
-  char *str = convertAndMerge(words);
-  printf("str = %s\n", str);
-  free(str);
+    char words[2][20] = {"Welcome to Xiyou ", "Linux Group 2022"};
+    printf("%s\n", words[0]);
+    printf("%s\n", words[1]);
+    char *str = convertAndMerge(words);
+    printf("str = %s\n", str);
+    free(str);
 }
 ```
 
@@ -202,17 +195,17 @@ int main(void) {
 
 ```c
 int main(int argc, char **argv) {
-  int arr[5][5];
-  int a = 0;
-  for (int i = 0; i < 5; i++) {
-    int *temp = *(arr + i);
-    for (; temp < arr[5]; temp++) *temp = a++;
-  }
-  for (int i = 0; i < 5; i++) {
-    for (int j = 0; j < 5; j++) {
-      printf("%d\t", arr[i][j]);
+    int arr[5][5];
+    int a = 0;
+    for (int i = 0; i < 5; i++) {
+        int *temp = *(arr + i);
+        for (; temp < arr[5]; temp++) *temp = a++;
     }
-  }
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d\t", arr[i][j]);
+        }
+    }
 }
 ```
 
@@ -224,14 +217,11 @@ int main(int argc, char **argv) {
 
 ```c
 #include <stdio.h>
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     printf("argc = %d\n", argc);
-    while (1)
-    {
+    while (1) {
         argc++;
-        if (argc < 0)
-        {
+        if (argc < 0) {
             printf("%s\n", (char *)argv[0]);
             break;
         }
@@ -252,7 +242,6 @@ argument vector
 int main(int argc, char **argv)
 {
     int data1[2][3] = {{0x636c6557, 0x20656d6f, 0x58206f74},
-                       //  u o y i     n i L            \0
                        {0x756f7969, 0x6e694c20, 0x00000000}};
     int data2[] = {0x47207875, 0x70756f72, 0x32303220, 0x00000a32};
     char *a = (char *)data1;
@@ -289,18 +278,18 @@ int data2[] = {0x47207875, 0x70756f72, 0x32303220, 0x00000a32};
 #define SQUARE(a) a *a
 #define SWAPWHEN(a, b, t, cond) if (cond) SWAP(a, b, t)
 int main() {
-  int tmp;
-  int x = 1;
-  int y = 2;
-  int z = 3;
-  int w = 3;
-  SWAP(x, y, tmp);
-  printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
-  if (x > y) SWAP(x, y, tmp);
-  printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
-  SWAPWHEN(x, y, tmp, SQUARE(1 + 2 + z++ + ++w) == 100);
-  printf("x = %d, y = %d,tmp=%d\n", x, y, tmp);
-  printf("z = %d, w = %d ,tmp = %d\n", z, w, tmp);
+    int tmp;
+    int x = 1;
+    int y = 2;
+    int z = 3;
+    int w = 3;
+    SWAP(x, y, tmp);
+    printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
+    if (x > y) SWAP(x, y, tmp);
+    printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
+    SWAPWHEN(x, y, tmp, SQUARE(1 + 2 + z++ + ++w) == 100);
+    printf("x = %d, y = %d,tmp=%d\n", x, y, tmp);
+    printf("z = %d, w = %d ,tmp = %d\n", z, w, tmp);
 }
 ```
 
