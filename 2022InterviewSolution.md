@@ -1,6 +1,6 @@
 # 西邮Linux兴趣小组2022纳新面试题题解
 
-> 感谢 [Zhilu](https://github.com/L33Z22L11) 重新录入题目原件。好人一生平安。
+> [Zhilu](https://github.com/L33Z22L11)
 
 > - 本题目只作为`Xiyou Linux兴趣小组`2022纳新面试的有限参考。
 > - 为节省版面，本试题的程序源码省去了`#include`指令。
@@ -17,7 +17,18 @@
 
 ## 0. 我的计算器坏了？！
 
-> `2^10=1024`对应于十进制的4位，那么`2^10000`对应于十进制的多少位呢?
+> `2^10 = 1024`对应于十进制的4位，那么`2^10000`对应于十进制的多少位呢?
+
+对于十进制数`d`，可以取其以10为底的对数，`[lg d] + 1`即为所求的位数。
+
+    [lg 2^10] + 1 = [10 lg 2] + 1 = 4
+    [lg 2^10000] + 1 = 3011
+
+当然，也可以使用Python，将`2^10000`转换为字符串并打印其长度解决。
+
+```python
+print(len(str(2**10000))) //3011
+```
 
 ## 1. printf还能这么玩？
 
@@ -31,6 +42,11 @@ int main(void) {
         printf("%d\n", printf("Xiyou Linux Group - 2%d", printf("")));
 }
 ```
+先看`if`语句，`3 + 2 < 2`为假返回`0`，`3 + 2 > 2`为真返回1，`0 > 1`为假，执行`else`内的语句。
+
+而`else`语句中，`printf()`的返回值为打印字符串的长度，因此最内层的`printf("")`打印`""`并返回其长度`0`，中间层打印`"Xiyou Linux Group - 20"`并返回其长度`22`，外层打印`"22\n"`，其结果为：
+
+    Xiyou Linux Group - 2022
 
 ## 2. 你好你好你好呀！
 
@@ -42,18 +58,28 @@ int main(void) {
     char p0[] = "Hello,Linux";
     char *p1 = "Hello,Linux";
     char p2[11] = "Hello,Linux";
-    printf("p0==p1: %d, strcmp(p0,p2): %d\n", p0 == p1, strcmp(p0, p2));
-    printf("sizeof(p0): %zu, sizeof(p1): %zu, sizeof(*p2): %zu \n",
+    printf("p0 == p1: %d, strcmp(p0, p2): %d\n", p0 == p1, strcmp(p0, p2));
+    printf("sizeof(p0): %zu, sizeof(p1): %zu, sizeof(*p2): %zu\n",
            sizeof(p0), sizeof(p1), sizeof(*p2));
     printf("strlen(p0): %zu, strlen(p1): %zu\n", strlen(p0), strlen(p1));
 }
 ```
-字符数组  
-字符指针
 
-`p0`、`p1`地址不同，`strcmp()`会从`p2`开始读到内存中的下一个`'\0'`
+`p0`是字符数组，以'\0'结尾，`p1`是字符指针，指向常量区的一个字符串，`p2`也是字符数组，但由于长度限制，没有结尾的标识符`\0`。
 
-`sizeof(p0)`是字符数组(含末尾`'\0'`)的大小，`sizeof(p1)`是指针地址的大小，`sizeof(*p2)`是字符`'H'`的大小
+直接引用数组变量名时，返回的是数组首位的地址，直接引用指针名时，返回的是指针指向的地址。由于`p0`、`p1`地址不同，因此`p1 == p2`不为真，返回`0`。`strcmp()`为字符串比较函数，从传入的两个地址参数开始向后读取字符并比较，直到出现不同的字符或者`\0`为止，返回正数、负数或0（相应字符的ASCII码之差有关），分别表示前者大、后者大、两者相等。当读到`p0`的`\0`时，此时`p2`的下一个字符为内存中的随机值。因此打印的第一行为：
+
+    p0 == p1: 0, strcmp(p0, p2): -72
+
+`sizeof(p0)`是字符数组(含`'\0'`以及未初始化的内容)的大小，`sizeof(p1)`是指针所存地址的大小，`sizeof(*p2)`是字符`'H'`的大小。因此打印的第二行为：
+
+    sizeof(p0): 12, sizeof(p1): 8, sizeof(*p2): 1
+
+`strlen()`返回字符串的长度，从传入的地址参数开始读取，直到内存中的下一个`'\0'`之前，返回读取的字符个数，
+
+    strlen(p0): 11, strlen(p1): 11
+
+另外，由于`p2`长度限制，数组内没有`'\0'`作字符串结束的标识符，因此`strlen(p2)`返回的是数组首位到内存随机内容的下一个`'\0'`，其返回值应该很大，具体结果视内存而定。
 
 ## 3. 换个变量名不行吗？
 
@@ -75,7 +101,10 @@ int main(void) {
     printf("a= %d\n", a);
 }
 ```
-代码块作用域内的局部变量a
+
+打印第一个a的内容不符合预期，因为代码块作用域内的局部变量a在声明时遇到了`Undefined behavior`，a的值视具体的编译器、系统、平台而定。
+
+> [浅谈 C++ Undefined Behavior](https://zhuanlan.zhihu.com/p/391088391)
 
 ## 4. 内存对不齐
 
@@ -98,20 +127,57 @@ int main(void) {
 }
 ```
 ```
-union:
-    sizeof (long) = 4
-    sizeof (int[5]) = 20
-    sizeof (char) = 1
+sizeof (long) = 4
+sizeof (int[5]) = 20
+sizeof (char) = 1
 ```
-`union`中的所有数据成员共享同一个存储空间，其在内存中的大小为最大成员的大小。
+`union`中的所有数据成员共享同一个存储空间，其在内存中的大小为最大成员的大小，因此`UNION`的大小应该为`20`。
 
 ```
-struct:
-    sizeof (int) = 4
-    sizeof (UNION) = 20
-    sizeof (double) = 8
+sizeof (int) = 4
+sizeof (UNION) = 20
+sizeof (double) = 8
 ```
-`struct`中的每个数据成员享有独立的存储空间，其在内存中的大小为所有成员的大小之和。
+`struct`中的每个数据成员享有独立的存储空间，其在内存中的大小为所有成员的大小之和。因此`STRUCT`的大小应该为`32`。
+
+真的是这样吗？
+
+在计算机中，为了方便读取数据，内存中各数据的起始地址通常都是4或8的倍数。因此结果很可能如下：
+
+    sizeof (UNION) = 24
+    sizeof (STRUCT) = 40
+
+> [C/C++内存对齐详解 - 知乎专栏](https://zhuanlan.zhihu.com/p/30007037)
+> 
+> [Data alignment: Straighten up and fly right - IBM Developer](https://developer.ibm.com/articles/pa-dalign/)
+
+```c
+// 若是4字节对齐
+typedef union {
+    long l;         // 0 ~ 3
+    int i[5];       // 0 ~ 19
+    char c;         // 0 ~ 7
+} UNION;            // 0 ~ 19 ==> 20
+typedef struct {
+    int like;       // 0 ~ 3
+    UNION coin;     // 4 ~ 23
+    double collect; // 23 ~ 30
+} STRUCT;           // 0 ~ 31 ==> 32
+```
+
+```c
+// 若是8字节对齐
+typedef union {
+    long l;         // 0 ~ 3
+    int i[5];       // 0 ~ 19
+    char c;         // 0 ~ 7
+} UNION;            // 0 ~ 23 ==> 24
+typedef struct {
+    int like;       // 0 ~ 3
+    UNION coin;     // 8 ~ 27
+    double collect; // 32 ~ 39
+} STRUCT;           // 0 ~ 39 ==> 40
+```
 
 ## 5. Bitwise
 
@@ -133,19 +199,26 @@ int main(void) {
     printf("e: %#x\n", e);
 }
 ```
-```
+
+按步骤执行：
+```javascript
 a = 0000 0010 | 0000 0111 = 0000 0111 => 7
 a = 0011 1000 = 28
+
 b = 0000 0101 & 0000 0111 = 0000 0111 => 7
 b = 0000 0000 = 0
+
 c = 0000 0110 ^ 0000 0111 = 0000 0001 => 1
 c = 1111 1110 => (unsigned) 254
-补码存储，按位取反
-d = (0011 1000 ^ 1111 1110) << 3
-  = 1100 0110 << 3
-  = 110 0011 0000 => 1584
+
+(unsigned short)d = (0011 1000 ^ 1111 1110) << 3
+                  = 1100 0110 << 3
+                  = 110 0011 0000 => 1584
+
 e = 1100 0001
 e = 0000 0100
+
+// 打印d是当成char输出，只保留低八位
 (char)d = 0011 0000 => 48
 ```
 
@@ -306,6 +379,8 @@ int main() {
 > - `whoami`
 > 
 > 请问你还了解哪些GNU/Linux的命令呢。
+
+
 
 > 恭喜你做到这里！你的坚持战胜了绝大多数看到这份试题的同学。  
 > 或许你自己对答题的表现不满意,但别担心，请自信一点呐。  
