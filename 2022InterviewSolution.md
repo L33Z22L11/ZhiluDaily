@@ -2,6 +2,8 @@
 
 > [Zhilu](https://github.com/L33Z22L11)
 
+[toc]
+
 > - 本题目只作为`Xiyou Linux兴趣小组`2022纳新面试的有限参考。
 > - 为节省版面，本试题的程序源码省去了`#include`指令。
 > - 本试题中的程序源码仅用于考察C语言基础，不应当作为C语言「代码风格」的范例。
@@ -157,12 +159,12 @@ typedef union {
     long l;         // 0 ~ 3
     int i[5];       // 0 ~ 19
     char c;         // 0 ~ 7
-} UNION;            // 0 ~ 19 ==> 20
+} UNION;            // 0 ~ 19 -> 20
 typedef struct {
     int like;       // 0 ~ 3
     UNION coin;     // 4 ~ 23
     double collect; // 23 ~ 30
-} STRUCT;           // 0 ~ 31 ==> 32
+} STRUCT;           // 0 ~ 31 -> 32
 ```
 
 ```c
@@ -171,12 +173,12 @@ typedef union {
     long l;         // 0 ~ 3
     int i[5];       // 0 ~ 19
     char c;         // 0 ~ 7
-} UNION;            // 0 ~ 23 ==> 24
+} UNION;            // 0 ~ 23 -> 24
 typedef struct {
     int like;       // 0 ~ 3
     UNION coin;     // 8 ~ 27
     double collect; // 32 ~ 39
-} STRUCT;           // 0 ~ 39 ==> 40
+} STRUCT;           // 0 ~ 39 -> 40
 ```
 
 ## 5. Bitwise
@@ -201,25 +203,38 @@ int main(void) {
 ```
 
 按步骤执行：
-```javascript
-a = 0000 0010 | 0000 0111 = 0000 0111 => 7
-a = 0011 1000 = 28
+```c
+#include <stdio.h>
+int main(void) {
+    unsigned char a = 4 | 7;
+    // a = 0000 0010 | 0000 0111 = 0000 0111 -> 7
+    a <<= 3;
+    // a = 0011 1000 = 28
+    unsigned char b = 5 & 7;
+    // b = 0000 0101 & 0000 0111 = 0000 0111 -> 7
+    b >>= 3;
+    // b = 0000 0000 = 0
+    unsigned char c = 6 ^ 7;
+    // c = 0000 0110 ^ 0000 0111 = 0000 0001 -> 1
+    c = ~c;
+    // c = 1111 1110 -> (unsigned) 254
+    unsigned short d = (a ^ c) << 3;
+    // d = (0011 1000 ^ 1111 1110) << 3
+    //   = 1100 0110 << 3
+    //   = 0000 0110 0011 0000 -> 1584
+    signed char e = -63;
+    // e = 1100 0001
+    e <<= 2;
+    // e = 0000 0100
 
-b = 0000 0101 & 0000 0111 = 0000 0111 => 7
-b = 0000 0000 = 0
-
-c = 0000 0110 ^ 0000 0111 = 0000 0001 => 1
-c = 1111 1110 => (unsigned) 254
-
-(unsigned short)d = (0011 1000 ^ 1111 1110) << 3
-                  = 1100 0110 << 3
-                  = 110 0011 0000 => 1584
-
-e = 1100 0001
-e = 0000 0100
-
-// 打印d是当成char输出，只保留低八位
-(char)d = 0011 0000 => 48
+    // 作为char类型打印d，只保留低八位
+    // (char)d = 0011 0000 -> 48
+    printf("a: %d, b: %d, c: %d, d: %d\n", a, b, c, (char)d);
+    // 56, 0, 254, 48
+    printf("e: %#x\n", e);
+    // 0x4
+    return 0;
+}
 ```
 
 ## 6. 英译汉
@@ -229,6 +244,12 @@ e = 0000 0100
 > 2. `char const *p`。
 > 3. `const char *p`。
 
+1. `char *const p`指`*p`是个常量型字符指针，其中所存的地址不能改变。
+
+2. `char const *p`指字符指针`*p`指向的字符是个常量，所指字符的内容不能改变，但可以改变`*p`指向的地址。
+
+3. `const char *p`指字符指针`*p`指向的字符是个常量，所指字符的内容不能改变，但可以改变`*p`指向的地址。
+
 ## 7. 汉译英
 
 > 请用变量`p`给出下面的定义:
@@ -236,12 +257,64 @@ e = 0000 0100
 > 2. 指向含有10个`int`数组的指针。
 > 3. 含有3个「指向函数的指针」的数组，被指向的函数有1个`int`参数并返回`int`。
 
+1. 
+
+    int *p[10];
+
+2. 
+
+    int arr[10];
+    int *p = (int*)arr;
+
+3. 
+
+    int (*p[3])(int arg);
+
+
 ## 8. 混乱中建立秩序
 
 > 你对排序算法了解多少呢?  
 > 请谈谈你所了解的排序算法的思想、稳定性、时间复杂度、空间复杂度。
 > 
 > 提示：动动你的小手敲出来更好哦~
+
+- 冒泡排序
+
+```c
+void bubbleSort(int arr[], int len)
+{
+    int i, j, tmp;
+    for (i = 0; i < len - 1; i++)
+        for (j = 0; j < len - 1 - i; j++)
+            if (arr[j] > arr[j + 1])
+            {
+                tmp = arr[j];
+                arr[j] = arr[j + 1];
+                arr[j + 1] = tmp;
+            }
+}
+```
+
+- 选择排序
+
+```c
+void selectionSort(int arr[], int len)
+{
+    int i, j;
+    for (i = 0; i < len - 1; i++)
+    {
+        int min = i;
+        for (j = i + 1; j < len; j++)
+            if (arr[j] < arr[min])
+                min = j;
+        int tmp = arr[min];
+        arr[min] = &arr[i];
+        &arr[i] = tmp;
+    }
+}
+```
+
+> https://github.com/hustcc/JS-Sorting-Algorithm
 
 ## 9. 手脑并用
 
@@ -253,6 +326,35 @@ e = 0000 0100
 ```c
 char* convertAndMerge(/*补全签名*/);
 int main(void) {
+    char words[2][20] = {"Welcome to Xiyou ", "Linux Group 2022"};
+    printf("%s\n", words[0]);
+    printf("%s\n", words[1]);
+    char *str = convertAndMerge(words);
+    printf("str = %s\n", str);
+    free(str);
+}
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+char *convertAndMerge(char strs[2][20])
+{
+    char *result = (char *)malloc(sizeof(char) * 40);
+    strcpy(result, strs[0]);
+    strcat(result, strs[1]);
+    int len = strlen(strs[0]) + strlen(strs[1]);
+    for (int i = 0; i < len; i++)
+    {
+        if (result[i] >= 'A' && result[i] <= 'Z')
+            result[i] += 32;
+        else if (result[i] >= 'a' && result[i] <= 'z')
+            result[i] -= 32;
+    }
+    return result;
+}
+int main(void)
+{
     char words[2][20] = {"Welcome to Xiyou ", "Linux Group 2022"};
     printf("%s\n", words[0]);
     printf("%s\n", words[1]);
@@ -282,6 +384,45 @@ int main(int argc, char **argv) {
 }
 ```
 
+运行后，程序的输出为：
+
+```
+0       1       2       3       4
+25      26      27      28      29
+45      46      47      48      49
+60      61      62      63      64
+70      71      72      73      74
+```
+
+程序在运行时，`a`是稳定自增的值，输出为此结果的原因是程序在每次循环时，将`a`的值从`arr[i]`的起始（`*temp = *(arr + i)`）赋值到数组的结尾。比如在第二次循环时，`a`从`25`自增到`44`的序列会从`arr[1][0]`赋值到`arr[4][4]`，覆盖了第一次循环后原先位置的`5`到`24`。
+
+如果将循环条件中的`temp < arr[5]`，改为`temp < arr[i+1]`，程序在每次循环时就会只对`arr[i]`内的元素进行操作，如下。
+
+```c
+#include <stdio.h>
+int main(int argc, char **argv) {
+    int arr[5][5];
+    int a = 0;
+    for (int i = 0; i < 5; i++) {
+        int *temp = *(arr + i);
+        for (; temp < arr[i+1]; temp++) *temp = a++;
+    }
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            printf("%d\t", arr[i][j]);
+        }
+    }
+}
+```
+
+```
+0       1       2       3       4
+5       6       7       8       9
+10      11      12      13      14
+15      16      17      18      19
+20      21      22      23      24
+```
+
 ## 11. 奇怪的参数
 
 > 你了解argc和argv吗？  
@@ -301,11 +442,8 @@ int main(int argc, char **argv) {
     }
 }
 ```
-```
-argument count
-自增到溢出
-argument vector
-```
+
+`argc`指argument count，即参数计数器，`argv`指argument vector，即参数数组。程序在运行时传入的第一个参数就是程序的启动路径/文件名，因此`argc`最小为`1`。在循环中，整型`argc`会自增到溢出，然后打印`argv[0]`即程序路径。
 
 ## 12. 奇怪的字符
 
@@ -323,10 +461,15 @@ int main(int argc, char **argv)
     strcpy(buf, a);
     strcat(buf, b);
     printf("%s \n", buf);
-    if(*buf='W') printf("LE");
-    else printf("BE");
 }
 ```
+
+程序的输出为：
+
+    Welcome to Xiyou Linux Group 2022
+
+文本在变量中的存储对应关系如下：
+
 ```c
 //                     c l e W       e m o     X   o t
 int data1[2][3] = {{0x636c6557, 0x20656d6f, 0x58206f74},
@@ -340,13 +483,18 @@ int data2[] = {0x47207875, 0x70756f72, 0x32303220, 0x00000a32};
 //     0x72, 0x6F, 0x75, 0x70, 0x20, 0x32, 0x30, 0x32, 0x32};
 ```
 
+程序运行时，会把`data[1]`和`data[2]`中的字符串拼接起来，然后输出。
+
+字符之所以“反向存储”，是因为在计算机中，为了方便某些设备的读取，采用了“小端序”(Little-endian)的存储方式：低位字节排放在内存的低地址端即该值的起始地址，高位字节排放在内存的高地址端。
+
+与此相对的自然是“大端序”(Big-endian)，常见于文件存储、网络传输中。
+
 ## 13. 小试宏刀
 
 > - 请谈谈你对`#define`的理解。
 > - 请尝试着解释程序的输出。
 
 ```c
-#include <stdio.h>
 #define SWAP(a, b, t) t = a; a = b; b = t
 #define SQUARE(a) a *a
 #define SWAPWHEN(a, b, t, cond) if (cond) SWAP(a, b, t)
@@ -361,7 +509,74 @@ int main() {
     if (x > y) SWAP(x, y, tmp);
     printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
     SWAPWHEN(x, y, tmp, SQUARE(1 + 2 + z++ + ++w) == 100);
-    printf("x = %d, y = %d,tmp=%d\n", x, y, tmp);
+    printf("x = %d, y = %d\n", x, y, tmp);
+    printf("z = %d, w = %d, tmp = %d\n", z, w, tmp);
+}
+```
+```
+x = 2, y = 1, tmp = 1
+x = 1, y = 2, tmp = 2
+x = 2, y = 2, tmp = 2
+z = 5, w = 5, tmp = 2
+```
+
+宏定义只是实现了**简单的文本替换**，不会自动为表达式补充圆括号或者为代码块补充花括号。因此，宏定义替换后等效于如下代码：
+
+```c
+#include <stdio.h>
+int main()
+{
+    int tmp;
+    int x = 1;
+    int y = 2;
+    int z = 3;
+    int w = 3;
+    // SWAP(x, y, tmp);
+    tmp = x;
+    x = y;
+    y = tmp;
+    printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
+    // x = 2, y = 1, tmp = 1
+    // if (x > y) SWAP(x, y, tmp);
+    if (x < y)
+        tmp = x;
+    // 无论如何以下两行都执行
+    x = y;
+    y = tmp;
+    printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
+    // x = 1, y = 2, tmp = 2
+    // SWAPWHEN(x, y, tmp, SQUARE(1 + 2 + z++ + ++w) == 100);
+    // 宏替换并不会为SQUARE()函数的参数加括号
+    if (1 + 2 + z++ + ++w * 1 + 2 + z++ + ++w == 100)
+        tmp = x;
+    x = y;
+    y = tmp;
+    printf("x = %d, y = %d", x, y, tmp);
+    // x = 2, y = 2
+    printf("z = %d, w = %d, tmp = %d\n", z, w, tmp);
+    // z = 5, w = 5 ,tmp = 2
+}
+```
+
+如此修改，便可令程序按预期执行。
+
+```c
+#include <stdio.h>
+#include <math.h>
+#define SWAP(a, b, t) { t = a; a = b; b = t; }
+#define SQUARE(a) pow(a, 2)
+#define SWAPWHEN(a, b, t, cond) if (cond) { SWAP(a, b, t) }
+int main() {
+    int tmp;
+    int x = 1;
+    int y = 2;
+    int z = 3;
+    int w = 3;
+    SWAP(x, y, tmp);
+    printf("x = %d, y = %d, tmp = %d\n", x, y, tmp);
+    if (x > y) SWAP(x, y, tmp);
+    SWAPWHEN(x, y, tmp, SQUARE(1 + 2 + z++ + ++w) == 100);
+    printf("x = %d, y = %d\n", x, y, tmp);
     printf("z = %d, w = %d ,tmp = %d\n", z, w, tmp);
 }
 ```
@@ -380,7 +595,15 @@ int main() {
 > 
 > 请问你还了解哪些GNU/Linux的命令呢。
 
+- `ls`即`list directory contents`，列出目前工作目录所含之文件及子目录（显示指定工作目录下之内容）。
 
+- `rm`即`remove`，用于删除一个文件或者目录，慎用。
+
+- `whoami`用来打印当前执行操作的用户名，与此相似的`who am i`则用来打印登陆当前 Linux 系统的用户名。
+
+- 实用的文件工具有`mv`、`touch`、`mkdir`、`cp`、`chmod`等。
+
+- 实用的网络工具有`nc`、`netstat`、`ping`等。
 
 > 恭喜你做到这里！你的坚持战胜了绝大多数看到这份试题的同学。  
 > 或许你自己对答题的表现不满意,但别担心，请自信一点呐。  
