@@ -2,8 +2,6 @@
 
 > [Zhilu](https://github.com/L33Z22L11)
 
-[toc]
-
 > - 本题目只作为`Xiyou Linux兴趣小组`2022纳新面试的有限参考。
 > - 为节省版面，本试题的程序源码省去了`#include`指令。
 > - 本试题中的程序源码仅用于考察C语言基础，不应当作为C语言「代码风格」的范例。
@@ -16,6 +14,7 @@
 > Copyright © 2022 西邮Linux兴趣小组, All Rights Reserved.  
 > 本试题使用采用 [知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议](http://creativecommons.org/licenses/by-nc-sa/4.0/) 进行许可。
 
+[toc]
 
 ## 0. 我的计算器坏了？！
 
@@ -450,8 +449,7 @@ int main(int argc, char **argv) {
 > 程序的输出有点奇怪，请尝试解释一下程序的输出吧。
 
 ```c
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     int data1[2][3] = {{0x636c6557, 0x20656d6f, 0x58206f74},
                        {0x756f7969, 0x6e694c20, 0x00000000}};
     int data2[] = {0x47207875, 0x70756f72, 0x32303220, 0x00000a32};
@@ -516,7 +514,7 @@ int main() {
 ```
 x = 2, y = 1, tmp = 1
 x = 1, y = 2, tmp = 2
-x = 2, y = 2, tmp = 2
+x = 2, y = 2
 z = 5, w = 5, tmp = 2
 ```
 
