@@ -1,4 +1,4 @@
-// input a num,
+// /Input a num,
 // and output it in serval notations
 #include <stdio.h>
 int main()
