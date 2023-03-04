@@ -74,8 +74,7 @@ void list(char dir[]) {
     }
     // 排序
     if (param & P_t) {
-        int i, j, temp;
-        for (i = 1; i < entryc; i++) {
+        for (int i = 1, j, temp; i < entryc; i++) {
             temp = entryIndex[i];
             for (j = i;
                  j > 0 && entry[entryIndex[j - 1]].mtime > entry[temp].mtime;
@@ -84,8 +83,7 @@ void list(char dir[]) {
             entryIndex[j] = temp;
         }
     } else {
-        int i, j, temp;
-        for (i = 1; i < entryc; i++) {
+        for (int i = 1, j, temp; i < entryc; i++) {
             temp = entryIndex[i];
             for (j = i; j > 0 && strcmp(entry[entryIndex[j - 1]].dname,
                                         entry[temp].dname) > 0;
@@ -124,9 +122,7 @@ void list(char dir[]) {
     printf(param & P_l ? "\n" : "\n\n");
     closedir(dirp);
     // 递归
-    if (!(param & P_R))
-        return;
-    for (int i = 0; i < entryc; i++) {
+    for (int i = 0; i < entryc && param & P_R; i++) {
         if (!strcmp(entry[i].dname, ".") || !strcmp(entry[i].dname, ".."))
             continue;
         char* path = malloc(PATH_MAX);
@@ -138,11 +134,12 @@ void list(char dir[]) {
 }
 
 void parseParam(char arg[]) {
-#define CheckParam(ch) \
-    if (*arg == *#ch)  \
-        paramTemp |= P_##ch;
+#define CheckParam(ch)   \
+    if (*arg == *#ch) {  \
+        param |= P_##ch; \
+        continue;        \
+    }
     while (*++arg) {
-        unsigned paramTemp = 0;
         CheckParam(a);
         CheckParam(l);
         CheckParam(R);
@@ -150,9 +147,7 @@ void parseParam(char arg[]) {
         CheckParam(r);
         CheckParam(i);
         CheckParam(s);
-        param |= paramTemp;
-        if (!paramTemp)
-            fprintf(stderr, "zls: 未知参数 '-%c'。\n", *arg);
+        fprintf(stderr, "zls: 未知参数 '-%c'。\n", *arg);
     }
 #undef CheckParam
 }
