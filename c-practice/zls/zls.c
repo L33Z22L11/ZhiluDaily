@@ -10,6 +10,7 @@
 #include <time.h>
 
 void list(char dir[]);
+void listfile(struct stat* einfo, char fname[]);
 void parseParam(char arg[]);
 char* mod2str(int mod);
 char* num2str(unsigned int num);
@@ -45,92 +46,92 @@ void list(char dir[]) {
     DIR* dirp = opendir(dir);
     if (!dirp) {
         closedir(dirp);
-        // fprintf(stderr, "zls: 无法访问 '%s': 没有那个目录。\n", dir);
+        struct stat einfo;
+        if (stat(dir, &einfo) == -1)
+            fprintf(stderr, "zls: 无法访问 '%s': 没有那个文件或目录。\n", dir);
+        else if (!(param & P_R)) {
+            listfile(&einfo, dir);
+            printf("\n");
+        }
         return;
     }
     printf("%s:\n", dir);
     // 生成列表
-    int entryc, entryIndex[PATH_MAX];
-    struct entry {
-        char dname[NAME_MAX];
+    int entc, enti[PATH_MAX];
+    struct entbrief {
+        char name[NAME_MAX];
         time_t mtime;
     };
-    struct entry* entry = malloc(sizeof(struct entry[PATH_MAX]));
-    struct dirent* entryp;
-    for (entryc = 0; (entryp = readdir(dirp)) != NULL;) {
-        if (!(param & P_a) && *entryp->d_name == '.')
+    struct entbrief* entv = malloc(sizeof(struct entbrief[PATH_MAX]));
+    struct dirent* entp;
+    for (entc = 0; (entp = readdir(dirp)) != NULL;) {
+        if (!(param & P_a) && *entp->d_name == '.')
             continue;
         struct stat einfo;
-        strcpy(entry[entryc].dname, entryp->d_name);
+        strcpy(entv[entc].name, entp->d_name);
         if (param & P_t) {
             char path[PATH_MAX];
-            sprintf(path, "%s/%s", dir, entryp->d_name);
+            sprintf(path, "%s/%s", dir, entp->d_name);
             if (stat(path, &einfo) == -1)
                 continue;
-            entry[entryc].mtime = einfo.st_mtim.tv_sec;
+            entv[entc].mtime = einfo.st_mtim.tv_sec;
         }
-        entryIndex[entryc] = entryc;
-        entryc++;
+        enti[entc] = entc;
+        entc++;
     }
     // 排序
-    if (param & P_t) {
-        for (int i = 1, j, temp; i < entryc; i++) {
-            temp = entryIndex[i];
-            for (j = i;
-                 j > 0 && entry[entryIndex[j - 1]].mtime > entry[temp].mtime;
-                 j--)
-                entryIndex[j] = entryIndex[j - 1];
-            entryIndex[j] = temp;
-        }
-    } else {
-        for (int i = 1, j, temp; i < entryc; i++) {
-            temp = entryIndex[i];
-            for (j = i; j > 0 && strcmp(entry[entryIndex[j - 1]].dname,
-                                        entry[temp].dname) > 0;
-                 j--)
-                entryIndex[j] = entryIndex[j - 1];
-            entryIndex[j] = temp;
-        }
+    for (int i = 1, j, temp; i < entc; i++) {
+        temp = enti[i];
+        for (j = i;
+             // 排序的condition比较长，所以称之为“悲伤的猪大排”
+             j > 0 &&
+             !!(param & P_r) ^
+                 (param & P_t
+                      ? entv[enti[j - 1]].mtime > entv[temp].mtime
+                      : strcmp(entv[enti[j - 1]].name, entv[temp].name) > 0);
+             j--)
+            enti[j] = enti[j - 1];
+        enti[j] = temp;
     }
     // 输出
-    for (int i = param & P_r ? entryc - 1 : 0;
-         param & P_r ? i >= 0 : i < entryc; param & P_r ? i-- : i++) {
+    for (int i = 0; i < entc; i++) {
         struct stat einfo;
         char path[PATH_MAX];
-        sprintf(path, "%s/%s", dir, entry[entryIndex[i]].dname);
+        sprintf(path, "%s/%s", dir, entv[enti[i]].name);
         if (stat(path, &einfo) == -1)
             continue;
-        if (param & P_i)
-            printf("%8lu  ", einfo.st_ino);
-        if (param & P_s)
-            // Zhilu's correction ;D
-            // 纠正：应该是4KB向上取整
-            printf("%4ld  ",
-                   (einfo.st_size / 4096 * 4) + (einfo.st_size % 4096 ? 4 : 0));
-        if (param & P_l) {
-            printf("%s  ", mod2str(einfo.st_mode));
-            printf("%4d  ", (int)einfo.st_nlink);
-            printf("%-8s  ", uname(einfo.st_uid));
-            printf("%-8s  ", gname(einfo.st_gid));
-            printf("%8ld  ", einfo.st_size);
-            printf("%.12s  ", 4 + ctime((const time_t*)&einfo.st_mtim));
-        }
-        printf(S_ISDIR(einfo.st_mode) ? "\033[1;34m%s\033[0m" : "%-10s",
-               entry[entryIndex[i]].dname);
-        printf(param & P_l ? "\n" : "  \t");
+        listfile(&einfo, entv[enti[i]].name);
+        printf(param & P_l || i % 5 == 4 ? "\n" : "  \t");
     }
     printf(param & P_l ? "\n" : "\n\n");
     closedir(dirp);
     // 递归
-    for (int i = 0; i < entryc && param & P_R; i++) {
-        if (!strcmp(entry[i].dname, ".") || !strcmp(entry[i].dname, ".."))
+    for (int i = 0; i < entc && param & P_R; i++) {
+        if (!strcmp(entv[i].name, ".") || !strcmp(entv[i].name, ".."))
             continue;
-        char* path = malloc(PATH_MAX);
-        sprintf(path, "%s/%s", dir, entry[i].dname);
+        char path[PATH_MAX];
+        sprintf(path, "%s/%s", dir, entv[i].name);
         list(path);
-        free(path);
     }
-    free(entry);
+    free(entv);
+}
+
+void listfile(struct stat* einfo, char fname[]) {
+    if (param & P_i)
+        printf("%8lu  ", einfo->st_ino);
+    if (param & P_s)
+        // Zhilu 纠正：应该是4KB向上取整
+        printf("%4ld  ",
+               (einfo->st_size / 4096 * 4) + (einfo->st_size % 4096 ? 4 : 0));
+    if (param & P_l) {
+        printf("%s  ", mod2str(einfo->st_mode));
+        printf("%4d  ", (int)einfo->st_nlink);
+        printf("%-8s  ", uname(einfo->st_uid));
+        printf("%-8s  ", gname(einfo->st_gid));
+        printf("%8ld  ", einfo->st_size);
+        printf("%.12s  ", 4 + ctime((const time_t*)&einfo->st_mtim));
+    }
+    printf(S_ISDIR(einfo->st_mode) ? "\033[1;34m%-10s\033[0m" : "%-10s", fname);
 }
 
 void parseParam(char arg[]) {
